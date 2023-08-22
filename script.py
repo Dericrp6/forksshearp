@@ -4,6 +4,10 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import shutil
 
+#para poder hacer mas eficiente puede hacerse que evite consuiltar muchas veces solicitudes http
+#para las mismas imagenes, se puedenn usar hilos 
+# tambien que pueda buscar los enlaces necesarios que cumplan el criterio de descarga 
+
 # Crear la carpeta "libros" si no existe
 if not os.path.exists("libros"):
     os.makedirs("libros")
@@ -18,7 +22,7 @@ base_url = "https://www.conaliteg.sep.gob.mx/"
 # URL de la página principal
 main_url = "https://www.conaliteg.sep.gob.mx/primaria.html"
 
-# Realizar solicitud HTTP a la página principal
+# Realizar solicitud HTTP a la página principal 
 response = requests.get(main_url)
 soup = BeautifulSoup(response.content, "html.parser")
 
@@ -51,7 +55,7 @@ for folder_name in valid_links:
             with open(image_path, "wb") as f:
                 f.write(image_response.content)
 
-print("Descargas completadas")
+print("Descarga completada")
 # Mover archivos de la carpeta temporal a las subcarpetas correspondientes en "libros"
 def move_files_to_folders():
     temporal_folder = "temporal"
@@ -77,6 +81,6 @@ def move_files_to_folders():
             new_file_path = os.path.join(subfolder_path, file_name)
             shutil.move(temp_file_path, new_file_path)
             
-    print("Movimiento de archivos completado.")
+    print("Proceso de archivos completado.")
 
 move_files_to_folders()
