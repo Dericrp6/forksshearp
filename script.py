@@ -1,12 +1,11 @@
 import os
+#con os tambien podemos hacer que cuando descargue un libro, limpie la terminal (en windows o linux) y comience con una nueva descarga
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import shutil
-
-#para poder hacer mas eficiente puede hacerse que evite consuiltar muchas veces solicitudes http
-#para las mismas imagenes, se puedenn usar hilos 
-# tambien que pueda buscar los enlaces necesarios que cumplan el criterio de descarga 
+#se instala tqdm para que pueda mostrar una barra de progreso en este codigo
+import tqdm; import tqdm
 
 # Crear la carpeta "libros" si no existe
 if not os.path.exists("libros"):
@@ -47,13 +46,17 @@ image_base_url = "https://www.conaliteg.sep.gob.mx/2023/c/{}/{}.jpg"
 
 # Descargar y guardar las imágenes en la carpeta "temporal"
 for folder_name in valid_links:
-    for image_number in range(401):
+    for image_number in tqdm(range(401), desc=folder_name): #se agrega el tqdm para el bucle
         image_download_url = image_base_url.format(folder_name, str(image_number).zfill(3))
         image_response = requests.get(image_download_url)
         if image_response.status_code == 200:
             image_path = os.path.join("temporal", "{}_{:03d}.jpg".format(folder_name, image_number))
             with open(image_path, "wb") as f:
                 f.write(image_response.content)
+            
+    #limpiamos terminal
+    #os.system("cls") #windows
+    os.system("clear") #linux
 
 print("Descarga completada")
 # Mover archivos de la carpeta temporal a las subcarpetas correspondientes en "libros"
@@ -80,6 +83,7 @@ def move_files_to_folders():
             # Mover el archivo a la subcarpeta en libros
             new_file_path = os.path.join(subfolder_path, file_name)
             shutil.move(temp_file_path, new_file_path)
+            
             
     print("Proceso de archivos completado.")
 
